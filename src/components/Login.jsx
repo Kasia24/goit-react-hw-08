@@ -4,6 +4,7 @@ import * as Yup from "yup";
 import { loginUser } from "../redux/LoginUser"; // funkcja do logowania
 import { setCredentials } from "../redux/authSlice"; // akcja do zapisania tokenu w store
 import { useNavigate } from "react-router-dom"; // do przekierowań
+import "./Login.css";
 
 const Login = () => {
   const dispatch = useDispatch();
