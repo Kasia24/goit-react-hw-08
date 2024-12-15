@@ -51,23 +51,13 @@ const Login = () => {
           <Form>
             <div>
               <label htmlFor="username">Email</label>
-              <Field
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter your email"
-              />
+              <Field type="text" id="username" name="username" />
               <ErrorMessage name="username" component="div" className="error" />
             </div>
 
             <div>
               <label htmlFor="password">Password</label>
-              <Field
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-              />
+              <Field type="password" id="password" name="password" />
               <ErrorMessage name="password" component="div" className="error" />
             </div>
 
