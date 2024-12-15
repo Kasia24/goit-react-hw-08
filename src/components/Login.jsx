@@ -1,7 +1,7 @@
 import { useDispatch } from "react-redux";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { loginUser } from "../api/auth"; // funkcja do logowania
+import { loginUser } from "../redux/LoginUser"; // funkcja do logowania
 import { setCredentials } from "../redux/authSlice"; // akcja do zapisania tokenu w store
 import { useNavigate } from "react-router-dom"; // do przekierowań
 
@@ -49,12 +49,12 @@ const Login = () => {
         {({ isSubmitting, errors }) => (
           <Form>
             <div>
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Email</label>
               <Field
                 type="text"
                 id="username"
                 name="username"
-                placeholder="Enter your username"
+                placeholder="Enter your email"
               />
               <ErrorMessage name="username" component="div" className="error" />
             </div>
