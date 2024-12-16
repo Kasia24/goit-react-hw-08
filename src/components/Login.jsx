@@ -43,16 +43,16 @@ const Login = () => {
 
       {/* Formularz logowania */}
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ email: "", password: "" }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({ isSubmitting, errors }) => (
           <Form>
             <div>
-              <label htmlFor="username">Email</label>
-              <Field type="text" id="username" name="username" />
-              <ErrorMessage name="username" component="div" className="error" />
+              <label htmlFor="email">Email</label>
+              <Field type="text" id="email" name="email" />
+              <ErrorMessage name="email" component="div" className="error" />
             </div>
 
             <div>
