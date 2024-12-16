@@ -1,24 +1,31 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import "./Home.css"; // Add your styling here
 
 const Home = () => {
-  const { token } = useSelector((state) => state.auth); // Sprawdzamy, czy użytkownik jest zalogowany
+  const { token, user } = useSelector((state) => state.auth); // Check user authentication
 
   return (
-    <div>
+    <div className="home-container">
       <h1>Welcome to the Contacts App</h1>
 
-      {/* Jeśli użytkownik jest zalogowany */}
       {token ? (
         <div>
-          <p>Welcome back! You can manage your contacts here.</p>
-          <Link to="/contacts">Go to Contacts</Link>
+          <p>{user ? `Welcome back, ${user.name}!` : "Welcome back!"}</p>
+          <p>You can manage your contacts here.</p>
+          <Link to="/contacts" className="btn">
+            Go to Contacts
+          </Link>
         </div>
       ) : (
-        // Jeśli użytkownik nie jest zalogowany
         <div>
           <p>To manage your contacts, please log in or register.</p>
-          <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
+          <Link to="/login" className="btn">
+            Login
+          </Link>
+          <Link to="/register" className="btn">
+            Register
+          </Link>
         </div>
       )}
     </div>
