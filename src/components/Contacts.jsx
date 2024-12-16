@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   fetchContacts,
   deleteContact,
@@ -12,65 +12,19 @@ import * as Yup from "yup";
 import { toast } from "react-hot-toast";
 import Fuse from "fuse.js";
 
-// Filtrowanie z Fuse.js
-const filterContacts = (contacts, query) => {
-  const fuse = new Fuse(contacts, {
-    keys: ["name", "phone"],
-    threshold: 0.3, // Wartość dopasowania
-  });
-  return fuse.search(query).map((result) => result.item);
-};
-
 const Contacts = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Pobranie kontaktów z Redux Store
+  // Redux state
   const { contacts, loading, error } = useSelector((state) => state.contacts);
   const { token } = useSelector((state) => state.auth);
 
-  // Stan do wyszukiwania
+  // Local state
   const [searchQuery, setSearchQuery] = useState("");
+  const [editContact, setEditContact] = useState(null); // Current contact being edited
 
-  // Formik - walidacja i początkowe wartości
-  const validationSchema = Yup.object({
-    name: Yup.string().required("Name is required"),
-    phone: Yup.string().required("Phone is required"),
-  });
-
-  // Obsługa formularza dodawania/edycji kontaktu
-  const handleAddEditSubmit = async (values, { setSubmitting }) => {
-    try {
-      if (values.id) {
-        // Edytowanie kontaktu
-        await dispatch(
-          updateContact({ id: values.id, contact: values, token })
-        );
-        toast.success("Contact updated successfully");
-      } else {
-        // Dodawanie nowego kontaktu
-        await dispatch(addContact({ contact: values, token }));
-        toast.success("Contact added successfully");
-      }
-    } catch (error) {
-      toast.error("Something went wrong");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // Usuwanie kontaktu
-  const handleDeleteContact = (id) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this contact?"
-    );
-    if (confirmed) {
-      dispatch(deleteContact({ id, token }));
-      toast.success("Contact deleted successfully");
-    }
-  };
-
-  // Ładowanie kontaktów
+  // Fetch contacts on component mount
   useEffect(() => {
     if (token) {
       dispatch(fetchContacts(token));
@@ -79,10 +33,56 @@ const Contacts = () => {
     }
   }, [dispatch, token, navigate]);
 
-  // Filtrowanie kontaktów na podstawie wyszukiwania
-  const filteredContacts = searchQuery
-    ? filterContacts(contacts, searchQuery)
-    : contacts;
+  // Form validation schema
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    phone: Yup.string().required("Phone is required"),
+  });
+
+  // Handle form submit for adding or editing
+  const handleAddEditSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      if (values.id) {
+        await dispatch(
+          updateContact({ id: values.id, contact: values, token })
+        );
+        toast.success("Contact updated successfully");
+      } else {
+        await dispatch(addContact({ contact: values, token }));
+        toast.success("Contact added successfully");
+      }
+      setEditContact(null); // Clear edit state
+      resetForm();
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Something went wrong";
+      toast.error(errorMessage);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Handle contact deletion
+  const handleDeleteContact = async (id) => {
+    if (window.confirm("Are you sure you want to delete this contact?")) {
+      try {
+        await dispatch(deleteContact({ id, token }));
+        toast.success("Contact deleted successfully");
+      } catch (error) {
+        toast.error("Failed to delete contact");
+      }
+    }
+  };
+
+  // Fuzzy search
+  const filteredContacts = useMemo(() => {
+    if (!searchQuery) return contacts;
+    const fuse = new Fuse(contacts, {
+      keys: ["name", "phone"],
+      threshold: 0.3,
+    });
+    return fuse.search(searchQuery).map((result) => result.item);
+  }, [contacts, searchQuery]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -91,9 +91,13 @@ const Contacts = () => {
     <div>
       <h1>Contacts</h1>
 
-      {/* Formularz dodawania/edycji kontaktu */}
+      {/* Form for adding or editing contacts */}
       <Formik
-        initialValues={{ name: "", phone: "", id: "" }} // domyślne wartości
+        initialValues={{
+          name: editContact?.name || "",
+          phone: editContact?.phone || "",
+          id: editContact?.id || "",
+        }}
         validationSchema={validationSchema}
         onSubmit={handleAddEditSubmit}
       >
@@ -101,19 +105,13 @@ const Contacts = () => {
           <Form>
             <div>
               <label htmlFor="name">Name</label>
-              <Field
-                type="text"
-                id="name"
-                name="name"
-                placeholder="Enter contact's name"
-              />
+              <Field id="name" name="name" placeholder="Enter contact's name" />
               <ErrorMessage name="name" component="div" className="error" />
             </div>
 
             <div>
               <label htmlFor="phone">Phone</label>
               <Field
-                type="text"
                 id="phone"
                 name="phone"
                 placeholder="Enter contact's phone"
@@ -123,14 +121,23 @@ const Contacts = () => {
 
             <div>
               <button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Contact"}
+                {isSubmitting
+                  ? "Saving..."
+                  : editContact
+                    ? "Update Contact"
+                    : "Add Contact"}
               </button>
+              {editContact && (
+                <button type="button" onClick={() => setEditContact(null)}>
+                  Cancel Edit
+                </button>
+              )}
             </div>
           </Form>
         )}
       </Formik>
 
-      {/* Wyszukiwanie */}
+      {/* Search bar */}
       <input
         type="text"
         placeholder="Search by name or phone"
@@ -138,26 +145,21 @@ const Contacts = () => {
         onChange={(e) => setSearchQuery(e.target.value)}
       />
 
-      {/* Lista kontaktów */}
+      {/* Contacts list */}
       <ul>
-        {filteredContacts.map((contact) => (
-          <li key={contact.id}>
-            {contact.name} - {contact.phone}
-            <button onClick={() => handleDeleteContact(contact.id)}>
-              Delete
-            </button>
-            <button
-              onClick={() => {
-                // Wypełnianie formularza do edycji kontaktu
-                document.getElementById("name").value = contact.name;
-                document.getElementById("phone").value = contact.phone;
-                document.getElementById("id").value = contact.id;
-              }}
-            >
-              Edit
-            </button>
-          </li>
-        ))}
+        {filteredContacts.length === 0 ? (
+          <p>No contacts found.</p>
+        ) : (
+          filteredContacts.map((contact) => (
+            <li key={contact.id}>
+              {contact.name} - {contact.phone}
+              <button onClick={() => handleDeleteContact(contact.id)}>
+                Delete
+              </button>
+              <button onClick={() => setEditContact(contact)}>Edit</button>
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );

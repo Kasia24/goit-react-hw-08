@@ -1,9 +1,8 @@
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import "./Home.css"; // Add your styling here
 
 const Home = () => {
-  const { token, user } = useSelector((state) => state.auth); // Check user authentication
+  const { token, user } = useSelector((state) => state.auth);
 
   return (
     <div className="home-container">
