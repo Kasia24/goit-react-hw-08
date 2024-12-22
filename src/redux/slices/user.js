@@ -1,69 +1,89 @@
-import { createSlice } from "@reduxjs/toolkit";
-import {
-  registerUser,
-  loginUser,
-  logoutUser,
-  getCurrentUser,
-} from "../operations/user";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 
-const onPending = (state) => {
-  state.isLoading = true;
-  state.error = null;
-};
+axios.defaults.baseURL = "https://connections-api.goit.global/";
 
-const onError = (state, action) => {
-  state.isLoading = false;
-  state.error = action.payload;
-};
+export const registerUser = createAsyncThunk(
+  "user/register",
+  async (userData, thunkAPI) => {
+    try {
+      const { data } = await axios.post("/users/signup", userData);
+      axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
 
-export const userSlice = createSlice({
+export const loginUser = createAsyncThunk(
+  "user/login",
+  async (credentials, thunkAPI) => {
+    try {
+      const { data } = await axios.post("/users/login", credentials);
+      axios.defaults.headers.common.Authorization = `Bearer ${data.token}`;
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const logoutUser = createAsyncThunk(
+  "user/logout",
+  async (_, thunkAPI) => {
+    try {
+      await axios.post("/users/logout");
+      delete axios.defaults.headers.common.Authorization;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const getCurrentUser = createAsyncThunk(
+  "user/current",
+  async (_, thunkAPI) => {
+    const token = axios.defaults.headers.common.Authorization;
+    if (!token) return thunkAPI.rejectWithValue("Brak tokenu autoryzacji");
+
+    try {
+      const { data } = await axios.get("/users/current");
+      return data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+const userSlice = createSlice({
   name: "user",
-
   initialState: {
     currentUser: null,
+    token: null,
     isLoading: false,
     error: null,
   },
-
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(registerUser.pending, onPending)
       .addCase(registerUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentUser = action.payload;
+        state.currentUser = action.payload.user;
+        state.token = action.payload.token;
       })
-      .addCase(registerUser.rejected, onError)
-
-      .addCase(loginUser.pending, onPending)
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.currentUser = action.payload;
+        state.currentUser = action.payload.user;
+        state.token = action.payload.token;
       })
-      .addCase(loginUser.rejected, onError)
-
-      .addCase(logoutUser.pending, onPending)
-      .addCase(logoutUser.fulfilled, (state, action) => {
-        state.isLoading = false;
+      .addCase(logoutUser.fulfilled, (state) => {
         state.currentUser = null;
+        state.token = null;
       })
-      .addCase(logoutUser.rejected, onError)
-
-      .addCase(getCurrentUser.pending, onPending)
       .addCase(getCurrentUser.fulfilled, (state, action) => {
-        state.isLoading = false;
         state.currentUser = action.payload;
-      })
-      .addCase(getCurrentUser.rejected, onError);
-  },
-
-  selectors: {
-    selectCurrentUser: (state) => state.currentUser,
-    selectIsLoading: (state) => state.isLoading,
-    selectError: (state) => state.error,
+      });
   },
 });
 
-export const { selectCurrentUser, selectIsLoading, selectError } =
-  userSlice.selectors;
-
-export const userReducer = userSlice.reducer;
+export const selectCurrentUser = (state) => state.user.currentUser;
+export default userSlice.reducer;

@@ -2,7 +2,7 @@ import { client, fakeClient } from "./http-client";
 
 const exampleCurrentUser = {
   userId: "12345",
-  username: "Kuba",
+  username: "Kasia",
 };
 
 const exampleAuthResponse = {

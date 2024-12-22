@@ -1,52 +1,28 @@
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Outlet,
-  Navigate,
-} from "react-router-dom";
-import { PrivateRoute } from "./PrivateRoute";
-import { AppBar } from "../components/AppBar";
-import { TasksPage } from "../pages/Tasks";
-import { NotFound } from "../pages/NotFound";
-import { LoginPage } from "../pages/Login";
-import { RegisterPage } from "../pages/Register";
-import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../redux/slices/user";
+import React from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/LoginPage";
+import { ContactsPage } from "./pages/ContactsPage";
+import { HomePage } from "./pages/HomePage";
+import { PrivateRoute } from "./components/PrivateRoute";
 
-const Layout = () => (
-  <>
-    <AppBar />
-    <Outlet />
-  </>
-);
-
-const Home = () => {
-  const user = useSelector(selectCurrentUser);
-
-  return user ? <Navigate to="/tasks" /> : <Navigate to="/login" />;
-};
-
-export const Router = () => (
-  <BrowserRouter>
-    <Routes>
-      <Route exact path="/" element={<Layout />}>
-        <Route exact path="" element={<Home />} />
-        <Route exact path="login" element={<LoginPage />} />
-
-        <Route exact path="register" element={<RegisterPage />} />
-
+export const Router = () => {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route
-          path="tasks"
+          path="/contacts"
           element={
             <PrivateRoute redirectTo="/login">
-              <TasksPage />
+              <ContactsPage />
             </PrivateRoute>
           }
         />
-
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
-  </BrowserRouter>
-);
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};

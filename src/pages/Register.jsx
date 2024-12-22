@@ -1,55 +1,45 @@
-import { classed } from "@tw-classed/react";
-import { AuthForm } from "../components/AuthForm";
-import { Link, Navigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, selectIsLoading } from "../redux/slices/user";
-import { registerUser } from "../redux/operations/user";
+import React from "react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../redux/userSlice";
 
 export const RegisterPage = () => {
-  const user = useSelector(selectCurrentUser);
-  const isLoadingUser = useSelector(selectIsLoading);
   const dispatch = useDispatch();
 
-  const register = (event) => {
-    const form = event.currentTarget;
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Imię jest wymagane"),
+    email: Yup.string()
+      .email("Nieprawidłowy email")
+      .required("Email jest wymagany"),
+    password: Yup.string()
+      .min(6, "Hasło musi mieć co najmniej 6 znaków")
+      .required("Hasło jest wymagane"),
+  });
 
-    const { email, password } = form.elements;
-
-    const credentials = {
-      email: email.value,
-      password: password.value,
-    };
-
-    console.log(credentials);
-    dispatch(registerUser(credentials));
+  const handleSubmit = (values, { resetForm }) => {
+    dispatch(registerUser(values));
+    resetForm();
   };
 
-  if (user) return <Navigate to="/tasks" />;
-
   return (
-    <Layout>
-      <Card>
-        <Title>Register</Title>
-        <AuthForm
-          label="Register"
-          onSubmit={register}
-          disabled={isLoadingUser}
-        />
+    <Formik
+      initialValues={{ name: "", email: "", password: "" }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      <Form>
+        <Field name="name" placeholder="Imię" />
+        <ErrorMessage name="name" component="div" />
 
-        <p>
-          Already have an account? <Highlight to="/login">Login</Highlight>
-        </p>
-      </Card>
-    </Layout>
+        <Field name="email" type="email" placeholder="Email" />
+        <ErrorMessage name="email" component="div" />
+
+        <Field name="password" type="password" placeholder="Hasło" />
+        <ErrorMessage name="password" component="div" />
+
+        <button type="submit">Zarejestruj</button>
+      </Form>
+    </Formik>
   );
 };
-
-const Layout = classed.main("p-32 flex flex-col items-center");
-
-const Card = classed.div(
-  "w-full max-w-sm p-6 bg-indigo-300 rounded-lg shadow-md flex flex-col items-center"
-);
-
-const Title = classed.h2("py-4 text-4xl bold");
-
-const Highlight = classed(Link, "hoverable", "bold underline text-blue-800");
