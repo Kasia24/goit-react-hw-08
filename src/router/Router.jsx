@@ -12,7 +12,7 @@ import { NotFound } from "../pages/NotFound";
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../redux/operations/user";
+import { selectCurrentUser } from "../redux/slices/user";
 
 const Layout = () => (
   <>

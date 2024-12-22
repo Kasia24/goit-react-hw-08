@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectError, selectIsLoading } from "..//redux/operations/tasks";
+import { selectError, selectIsLoading } from "../redux/slices/tasks";
 import { TaskForm } from "../components/TaskForm";
 import { StatusFilter } from "../components/StatusFilter";
 import { TaskList } from "../components/TaskList";
-import { fetchTasks } from "..//redux/operations/tasks";
+import { fetchTasks } from "../redux/operations/tasks";
 import { classed } from "@tw-classed/react";
 
 export const TasksPage = () => {

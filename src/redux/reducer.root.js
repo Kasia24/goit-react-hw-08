@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import { tasksReducer } from "../operations/tasks";
-import { filtersReducer } from "../slices/filter";
-import { userReducer } from "..//operations/user";
+import { tasksReducer } from "./slices/tasks";
+import { filtersReducer } from "./slices/filter";
+import { userReducer } from "./slices/user";
 
 export const rootReducer = combineReducers({
   tasks: tasksReducer,
