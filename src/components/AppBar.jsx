@@ -1,8 +1,8 @@
 import { classed } from "@tw-classed/react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
-import { selectCurrentUser } from "../redux/slices/user";
-import { logoutUser } from "../redux/operations/user";
+import { selectCurrentUser } from "..//redux/operations/user";
+import { logoutUser } from "..//redux/operations/user";
 
 export const AppBar = () => {
   const user = useSelector(selectCurrentUser);
