@@ -67,23 +67,66 @@ const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.currentUser = action.payload.user;
         state.token = action.payload.token;
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Rejestracja nie powiodła się";
+      })
+      .addCase(loginUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.currentUser = action.payload.user;
         state.token = action.payload.token;
       })
+      .addCase(loginUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Logowanie nie powiodło się";
+      })
+      .addCase(logoutUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(logoutUser.fulfilled, (state) => {
+        state.isLoading = false;
         state.currentUser = null;
         state.token = null;
       })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload || "Błąd podczas wylogowywania";
+      })
+      .addCase(getCurrentUser.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
       .addCase(getCurrentUser.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.currentUser = action.payload;
+      })
+      .addCase(getCurrentUser.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error =
+          action.payload || "Błąd podczas pobierania danych użytkownika";
       });
   },
 });
 
+// Eksportuj `userReducer`
+export const userReducer = userSlice.reducer;
+
 export const selectCurrentUser = (state) => state.user.currentUser;
-export default userSlice.reducer;
+export const selectIsLoading = (state) => state.user.isLoading;
+export const selectError = (state) => state.user.error;
+
+export default userSlice.reducer; // również zachowujemy domyślny eksport

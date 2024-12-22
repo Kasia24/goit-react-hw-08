@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentUser } from "../redux/userSlice";
+import { selectCurrentUser } from "../redux/slices/user";
 
 export const PrivateRoute = ({ children, redirectTo }) => {
   const user = useSelector(selectCurrentUser);

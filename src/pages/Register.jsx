@@ -2,7 +2,7 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
-import { registerUser } from "../redux/userSlice";
+import { registerUser } from "../redux/slices/user";
 
 export const RegisterPage = () => {
   const dispatch = useDispatch();

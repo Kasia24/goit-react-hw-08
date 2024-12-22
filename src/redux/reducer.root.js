@@ -1,10 +1,8 @@
-import { combineReducers } from "redux";
-import { tasksReducer } from "./slices/tasks";
-import { filtersReducer } from "./slices/filter";
-import { userReducer } from "./slices/user";
+import { userReducer } from "../redux/slices/user";
 
-export const rootReducer = combineReducers({
-  tasks: tasksReducer,
-  filters: filtersReducer,
+// Inicjalizacja rootReducer z Redux Toolkit
+const rootReducer = {
   user: userReducer,
-});
+};
+
+export default rootReducer;
