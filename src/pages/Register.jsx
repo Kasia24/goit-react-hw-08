@@ -2,8 +2,8 @@ import { classed } from "@tw-classed/react";
 import { AuthForm } from "../components/AuthForm";
 import { Link, Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { selectCurrentUser, selectIsLoading } from "..//redux/operations/user";
-import { registerUser } from "..//redux/operations/user";
+import { selectCurrentUser, selectIsLoading } from "../redux/slices/user";
+import { registerUser } from "../redux/operations/user";
 
 export const RegisterPage = () => {
   const user = useSelector(selectCurrentUser);
