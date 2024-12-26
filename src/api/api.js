@@ -17,7 +17,7 @@ export const setAuthToken = (token) => {
 export const register = (data) => instance.post("/users/signup", data);
 export const login = (data) => instance.post("/users/login", data);
 export const logout = () => instance.post("/users/logout");
-export const fetchContacts = () => instance.get("/contacts");
+export const fetchContacts = () => instance.get("/users/current");
 export const addContact = (data) => instance.post("/contacts", data);
 export const deleteContact = (id) => instance.delete(`/contacts/${id}`);
 export const updateContact = (id, data) => instance.patch(`/contacts/${id}`);
