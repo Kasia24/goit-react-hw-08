@@ -5,6 +5,7 @@ import { addContact } from "../api/api";
 import toast from "react-hot-toast";
 import { Button, TextField, Box } from "@mui/material";
 
+// eslint-disable-next-line react/prop-types
 const ContactForm = ({ onContactAdded }) => {
   const initialValues = {
     name: "",

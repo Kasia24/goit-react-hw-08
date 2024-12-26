@@ -7,16 +7,16 @@ const Header = ({ isLoggedIn, onLogout }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken"); // Usunięcie tokena z LocalStorage
-    onLogout(); // Aktualizacja stanu logowania w aplikacji
-    toast.success("Logged out successfully!");
-    navigate("/login"); // Przekierowanie na stronę logowania
+    localStorage.removeItem("authToken"); // Usuwamy token z localStorage
+    onLogout(); // Wywołujemy funkcję onLogout, aby zaktualizować stan w aplikacji
+    toast.success("Logged out successfully!"); // Pokazujemy powiadomienie
+    navigate("/login"); // Przekierowujemy użytkownika na stronę logowania
   };
 
   return (
     <AppBar position="static">
       <Toolbar>
-        <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
           <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
             Phonebook
           </Link>
