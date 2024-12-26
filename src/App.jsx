@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Header from "./components/Header";
@@ -7,15 +7,32 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import ContactsPage from "./pages/ContactsPage";
 import PrivateRoute from "./components/PrivateRoute";
-import TasksPage from "./TasksPage";
+import TasksPage from "./components/TaskPage";
 
 const App = () => {
-  const isLoggedIn = !!localStorage.getItem("authToken"); // Sprawdza, czy użytkownik jest zalogowany (token w localStorage)
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!localStorage.getItem("authToken")
+  );
+
+  // Funkcja do wylogowania, zmienia stan isLoggedIn
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+  };
+
+  // Aktualizowanie stanu logowania, gdy zmienia się token w localStorage
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   return (
     <Router>
       {/* Komponent Header wyświetlany na wszystkich stronach */}
-      <Header isLoggedIn={isLoggedIn} />
+      <Header isLoggedIn={isLoggedIn} onLogout={handleLogout} />
 
       {/* Toaster do wyświetlania powiadomień */}
       <Toaster position="top-right" reverseOrder={false} />
@@ -31,11 +48,15 @@ const App = () => {
           path="/contacts"
           element={
             <PrivateRoute isLoggedIn={isLoggedIn}>
-              <Route
-                path="/tasks"
-                element={isLoggedIn ? <TasksPage /> : <LoginPage />}
-              />
               <ContactsPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
+            <PrivateRoute isLoggedIn={isLoggedIn}>
+              <TasksPage />
             </PrivateRoute>
           }
         />

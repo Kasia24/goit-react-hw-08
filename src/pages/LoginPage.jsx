@@ -1,112 +1,61 @@
-import React from "react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
-import { Box, Button, Typography, TextField, Alert } from "@mui/material";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { TextField, Button, Box, Typography } from "@mui/material";
 import { toast } from "react-hot-toast";
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook do nawigacji
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
-  const initialValues = {
-    email: "",
-    password: "",
-  };
+  const handleLogin = (e) => {
+    e.preventDefault();
 
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-  });
+    // Prosta logika sprawdzania danych logowania
+    if (username === "user" && password === "password") {
+      // Zapisujemy token w localStorage
+      localStorage.setItem("authToken", "some-auth-token");
+      toast.success("Login successful!");
 
-  const handleSubmit = async (values, { setSubmitting, setFieldError }) => {
-    try {
-      const response = await fetch(
-        "https://connections-api.goit.global/users/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(values),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Invalid email or password");
-      }
-
-      const data = await response.json();
-      localStorage.setItem("authToken", data.token); // Zapisanie tokena do localStorage
-      toast.success("Logged in successfully!");
-      navigate("/contacts"); // Przekierowanie do strony kontaktów
-    } catch (error) {
-      toast.error("Login failed. Please check your credentials.");
-      setFieldError("email", "Invalid email or password");
-      setFieldError("password", "Invalid email or password");
-    } finally {
-      setSubmitting(false);
+      // Przekierowujemy użytkownika do strony TaskPage po zalogowaniu
+      navigate("/tasks");
+    } else {
+      toast.error("Invalid username or password.");
     }
   };
 
   return (
-    <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      minHeight="100vh"
-      padding={4}
-    >
+    <Box sx={{ maxWidth: 400, margin: "auto", padding: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Login to Your Account
+        Login
       </Typography>
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isSubmitting }) => (
-          <Form>
-            <Box mb={3}>
-              <Field
-                name="email"
-                as={TextField}
-                label="Email"
-                fullWidth
-                variant="outlined"
-                helperText={<ErrorMessage name="email" />}
-                error={<ErrorMessage name="email" /> ? true : false}
-              />
-            </Box>
-            <Box mb={3}>
-              <Field
-                name="password"
-                as={TextField}
-                type="password"
-                label="Password"
-                fullWidth
-                variant="outlined"
-                helperText={<ErrorMessage name="password" />}
-                error={<ErrorMessage name="password" /> ? true : false}
-              />
-            </Box>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Logging in..." : "Log In"}
-            </Button>
-          </Form>
-        )}
-      </Formik>
+      <form onSubmit={handleLogin}>
+        <TextField
+          label="Username"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <TextField
+          label="Password"
+          variant="outlined"
+          fullWidth
+          margin="normal"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          type="submit"
+          fullWidth
+          sx={{ marginTop: 2 }}
+        >
+          Login
+        </Button>
+      </form>
     </Box>
   );
 };
