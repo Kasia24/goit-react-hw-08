@@ -1,14 +1,14 @@
-import { StrictMode } from "react";
-import { createRoot } from "react-dom/client";
-import "./index.css";
-import { App } from "./App.jsx";
-import { Provider } from "react-redux";
-import { store } from "./redux/store";
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App"; // Główny komponent aplikacji
+import "./index.css"; // Opcjonalnie, plik z ogólnymi stylami CSS
 
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </StrictMode>
+// Tworzymy root aplikacji, używając ReactDOM.createRoot (dla React 18+)
+const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// Renderujemy aplikację w DOM
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
 );
