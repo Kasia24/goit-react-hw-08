@@ -10,24 +10,23 @@ import PrivateRoute from "./components/PrivateRoute";
 import TasksPage from "./components/TaskPage";
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem("authToken")
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // Funkcja do wylogowania, zmienia stan isLoggedIn
+  // Funkcja do wylogowania
   const handleLogout = () => {
-    setIsLoggedIn(false);
+    localStorage.removeItem("authToken"); // Usuwamy token
+    setIsLoggedIn(false); // Ustawiamy stan na 'false' po wylogowaniu
   };
 
-  // Aktualizowanie stanu logowania, gdy zmienia się token w localStorage
+  // Aktualizowanie stanu logowania na podstawie tokenu w localStorage
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
-      setIsLoggedIn(true);
+      setIsLoggedIn(true); // Jeżeli token istnieje, użytkownik jest zalogowany
     } else {
-      setIsLoggedIn(false);
+      setIsLoggedIn(false); // Jeżeli token nie istnieje, użytkownik nie jest zalogowany
     }
-  }, []);
+  }, []); // Ten efekt będzie działał tylko raz po załadowaniu komponentu
 
   return (
     <Router>

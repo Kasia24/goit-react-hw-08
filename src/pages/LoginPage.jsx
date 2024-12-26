@@ -11,14 +11,14 @@ const LoginPage = () => {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    // Prosta logika sprawdzania danych logowania
+    // Prosta logika sprawdzania danych logowania (symulacja)
     if (username === "user" && password === "password") {
       // Zapisujemy token w localStorage
-      localStorage.setItem("authToken", "some-auth-token");
+      localStorage.setItem("authToken", "some-auth-token"); // Przechowywanie tokenu w localStorage
       toast.success("Login successful!");
 
       // Przekierowujemy użytkownika do strony TaskPage po zalogowaniu
-      navigate("/tasks");
+      navigate("/TaskPage");
     } else {
       toast.error("Invalid username or password.");
     }
