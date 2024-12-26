@@ -18,7 +18,7 @@ const LoginPage = () => {
       toast.success("Login successful!");
 
       // Przekierowujemy użytkownika do strony TaskPage po zalogowaniu
-      navigate("/TaskPage");
+      navigate("/tasks");
     } else {
       toast.error("Invalid username or password.");
     }
