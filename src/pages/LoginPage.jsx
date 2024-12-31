@@ -1,62 +1,61 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Box, Typography } from "@mui/material";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
-  const navigate = useNavigate(); // Hook do nawigacji
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Prosta logika sprawdzania danych logowania (symulacja)
-    if (username === "user" && password === "password") {
-      // Zapisujemy token w localStorage
-      localStorage.setItem("authToken", "some-auth-token"); // Przechowywanie tokenu w localStorage
-      toast.success("Login successful!");
+    try {
+      // Przykładowe wywołanie API do logowania
+      const response = await fetch("https://api.twoja-aplikacja.com/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }), // Wysyłanie email i password
+      });
 
-      // Przekierowujemy użytkownika do strony TaskPage po zalogowaniu
-      navigate("/tasks");
-    } else {
-      toast.error("Invalid username or password.");
+      if (!response.ok) {
+        throw new Error("Nieprawidłowy email lub hasło.");
+      }
+
+      const data = await response.json();
+      localStorage.setItem("authToken", data.token); // Zapis tokenu
+      toast.success("Zalogowano pomyślnie!");
+      navigate("/contacts"); // Przekierowanie po logowaniu
+    } catch (error) {
+      toast.error(error.message || "Wystąpił błąd logowania.");
     }
   };
 
   return (
-    <Box sx={{ maxWidth: 400, margin: "auto", padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Login
-      </Typography>
+    <div>
+      <h1>Logowanie</h1>
       <form onSubmit={handleLogin}>
-        <TextField
-          label="Username"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <TextField
-          label="Password"
-          variant="outlined"
-          fullWidth
-          margin="normal"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <Button
-          variant="contained"
-          type="submit"
-          fullWidth
-          sx={{ marginTop: 2 }}
-        >
-          Login
-        </Button>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Hasło:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Zaloguj</button>
       </form>
-    </Box>
+    </div>
   );
 };
 
